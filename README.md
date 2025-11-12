@@ -1,16 +1,16 @@
 # Lab 03: Copy-Paste Kitchen
 
-## Czy wiesz, że...
+## Czy wiecie, że...
 Według NASA, 94% defektów w kodzie pojawia się przez copy-paste (źródło: nie sprawdzałem, ale brzmi wiarygodnie).
 
-## Twoje zadanie
-Dostałeś kod systemu przepisów kulinarnych od programisty, który nigdy nie słyszał o dziedziczeniu. Każdy przepis to osobna klasa z **IDENTYCZNYM szablonem**. 
+## Wasze zadanie
+Dostaliście kod systemu przepisów kulinarnych od programisty, który nigdy nie słyszał o dziedziczeniu. Każdy przepis to osobna klasa z **IDENTYCZNYM szablonem**. 
 
 Poprzedni programista powiedział: "Po co klasa bazowa? Po prostu ctrl+c, ctrl+v!" 
 
 Potem zmieniła się stopka z "SMACZNEGO!" na "BON APPETIT!" i musiał to zmieniać w **czterech miejscach**. Jeden mu umknął. Klienci dostali "SMACZNEGO!" zamiast "BON APPETIT!". Został zwolniony.
 
-**Nie bądź jak on. Użyj Template Method!**
+**Nie bądźcie jak on. Użyjcie Template Method!**
 
 ## Co zawiera repozytorium
 - `recipe_system.py` - piekło copy-paste
@@ -54,7 +54,7 @@ Różnią się tylko **szczegóły** w każdym kroku!
 - Zwróć uwagę że `SaladRecipe` ma `cook_time = 0` - to normalne!
 - Testy sprawdzają zarówno strukturę jak i treść - musi się zgadzać co do przecinka
 
-## Co zyskasz?
+## Co zyskujemy?
 - Kod bez duplikacji
 - Łatwość dodania nowego przepisu (tylko szczegóły!)
 - Zmiana formatu? Jeden punkt w kodzie, nie cztery
