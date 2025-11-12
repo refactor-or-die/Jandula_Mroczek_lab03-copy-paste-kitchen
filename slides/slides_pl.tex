@@ -1,0 +1,427 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{polski}
+\usepackage{lmodern}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{gray},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray}
+}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{}
+
+\title{Template Method (Metoda szablonowa)}
+\subtitle{czyli jak przestać kopiować ten sam kod 47 razy}
+\author{Wzorce projektowe -- laboratorium}
+\date{14 listopada 2025}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Wyobraź sobie...}
+\begin{center}
+\Large
+Piszesz aplikację z przepisami kulinarnymi.
+\end{center}
+
+\pause
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item Makaron: przygotuj składniki $\rightarrow$ gotuj $\rightarrow$ podaj
+    \pause
+    \item Pizza: przygotuj składniki $\rightarrow$ gotuj $\rightarrow$ podaj
+    \pause
+    \item Sałatka: przygotuj składniki $\rightarrow$ gotuj $\rightarrow$ podaj
+    \pause
+    \item Zupa: przygotuj składniki $\rightarrow$ gotuj $\rightarrow$ podaj
+\end{itemize}
+
+\vspace{0.5cm}
+\pause
+
+\begin{center}
+\textbf{Czekaj...} To jest prawie ten sam kod! \\
+\vspace{0.3cm}
+Tylko szczegóły się różnią!
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Bez Template Method -- copy-paste'owa masakra}
+\begin{lstlisting}
+class PastaRecipe:
+    def prepare(self):
+        print("=== Gotowanie Makaronu ===")
+        print("1. Przygotowanie skladnikow...")
+        print("  - Makaron 250g")
+        print("  - Sos pomidorowy")
+        self._boil_water()
+        print("2. Gotowanie...")
+        print("  - Gotuj makaron 10 min")
+        self._check_if_ready()
+        print("3. Podawanie...")
+        print("  - Podaj z parmezanem")
+        print("=== Gotowe! ===\n")
+    
+    def _boil_water(self):
+        print("  >> Zagotuj wode")
+    
+    def _check_if_ready(self):
+        print("  >> Sprawdz czy gotowe")
+\end{lstlisting}
+
+\textbf{I teraz to samo dla pizzy, salatki, zupy...}
+\end{frame}
+
+\begin{frame}[fragile]{Bez Template Method -- jeszcze więcej copy-paste}
+\begin{lstlisting}
+class PizzaRecipe:
+    def prepare(self):
+        print("=== Pieczenie Pizzy ===")
+        print("1. Przygotowanie skladnikow...")
+        print("  - Ciasto")
+        print("  - Sos, ser, salami")
+        self._boil_water()  # czekaj... pizza nie potrzebuje wody!
+        print("2. Gotowanie...")
+        print("  - Piec w 220C przez 15 min")
+        self._check_if_ready()
+        print("3. Podawanie...")
+        print("  - Pokroj na kawalki")
+        print("=== Gotowe! ===\n")
+    
+    def _boil_water(self):
+        print("  >> Nagrzej piekarnik")  # ej, to nie gotowanie wody!
+    
+    def _check_if_ready(self):
+        print("  >> Sprawdz czy gotowe")
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Problem}
+\begin{itemize}
+    \item Masz \textbf{prawie identyczny algorytm} w kilku klasach
+    \item Różnią się tylko \textbf{szczegóły} (składniki, sposób gotowania)
+    \item Ale cały \textbf{szablon jest powielony}:
+    \begin{itemize}
+        \item Nagłówek "=== Gotowanie X ==="
+        \item Numeracja kroków "1. 2. 3."
+        \item Stopka "=== Gotowe! ==="
+    \end{itemize}
+    \item Chcesz zmienić format? \textbf{Musisz zmienić w 47 miejscach!}
+    \item Nowy przepis? \textbf{Znowu kopiuj-wklej 50 linii!}
+\end{itemize}
+
+\vspace{1cm}
+
+\begin{center}
+\Large
+\textbf{Rozwiązanie:} Template Method Pattern
+\end{center}
+\end{frame}
+
+\begin{frame}{Wzorzec Template Method - idea}
+\begin{center}
+\begin{tikzpicture}[
+    class/.style={rectangle, draw=black, fill=blue!20, text width=6cm, text left, minimum height=1cm, font=\small},
+    abstract/.style={rectangle, draw=black, fill=yellow!20, text width=6cm, text left, minimum height=2.5cm, font=\small},
+    concrete/.style={rectangle, draw=black, fill=green!20, text width=4cm, text left, minimum height=2cm, font=\small},
+    arrow/.style={->, >=stealth, thick}
+]
+    \node[abstract] (template) {
+        \textbf{Recipe (abstract)}\\
+        \vspace{0.2cm}
+        + prepare() \{\\
+        \quad print(header)\\
+        \quad gather\_ingredients() // abstract\\
+        \quad cook() // abstract\\
+        \quad serve() // abstract\\
+        \quad print(footer)\\
+        \}
+    };
+    
+    \node[concrete, below left=1cm and 0.5cm of template] (pasta) {
+        \textbf{PastaRecipe}\\
+        \vspace{0.2cm}
+        + gather\_ingredients()\\
+        + cook()\\
+        + serve()
+    };
+    
+    \node[concrete, below right=1cm and 0.1cm of template] (pizza) {
+        \textbf{PizzaRecipe}\\
+        \vspace{0.2cm}
+        + gather\_ingredients()\\
+        + cook()\\
+        + serve()
+    };
+    
+    \draw[arrow] (pasta.north) -- (template.south west);
+    \draw[arrow] (pizza.north) -- (template.south east);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.3cm}
+
+\textbf{Idea:} Klasa bazowa definiuje \textit{szkielet algorytmu}. \\
+Podklasy wypełniają \textit{szczegóły}.
+\end{frame}
+
+\begin{frame}[fragile]{Z Template Method -- klasa bazowa}
+\begin{lstlisting}[basicstyle=\ttfamily\tiny]
+from abc import ABC, abstractmethod
+
+class Recipe(ABC):
+    """Szablon przepisu - szkielet algorytmu"""
+    
+    def prepare(self):
+        """Template Method - NIE NADPISUJEMY!"""
+        print(f"=== {self.get_name()} ===")
+        print("1. Przygotowanie skladnikow...")
+        self.gather_ingredients()
+        
+        print("2. Gotowanie...")
+        self.cook()
+        
+        print("3. Podawanie...")
+        self.serve()
+        
+        print("=== Gotowe! ===\n")
+    
+    @abstractmethod
+    def get_name(self) -> str:
+        pass
+    
+    @abstractmethod
+    def gather_ingredients(self):
+        pass
+    # ... pozostale metody abstrakcyjne
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Z Template Method -- konkretne przepisy}
+\begin{lstlisting}
+class PastaRecipe(Recipe):
+    def get_name(self):
+        return "Gotowanie Makaronu"
+    
+    def gather_ingredients(self):
+        print("  - Makaron 250g")
+        print("  - Sos pomidorowy")
+    
+    def cook(self):
+        print("  - Zagotuj wode")
+        print("  - Gotuj makaron 10 min")
+    
+    def serve(self):
+        print("  - Podaj z parmezanem")
+
+# Uzycie
+pasta = PastaRecipe()
+pasta.prepare()  # Caly proces automatycznie!
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Co tu się dzieje? - Krok po kroku}
+\begin{center}
+\Large
+\textbf{1. Szablon definiuje KOLEJNOŚĆ}
+\end{center}
+
+\vspace{0.5cm}
+
+Metoda \texttt{prepare()} w klasie bazowej to \textbf{Template Method}:
+\begin{itemize}
+    \item Mówi: "Każdy przepis robi to w TEJ kolejności"
+    \item Drukuje nagłówek
+    \item Wywołuje \texttt{gather\_ingredients()}
+    \item Wywołuje \texttt{cook()}
+    \item Wywołuje \texttt{serve()}
+    \item Drukuje stopkę
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Kluczowa rzecz:} Ta metoda jest \texttt{final} (nie nadpisujemy jej!)
+\end{frame}
+
+\begin{frame}{Co tu się dzieje? - Abstrakcyjne kroki}
+\begin{center}
+\Large
+\textbf{2. Podklasy WYPEŁNIAJĄ szczegóły}
+\end{center}
+
+\vspace{0.5cm}
+
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\textbf{PastaRecipe:}
+\begin{itemize}
+    \item \texttt{gather\_ingredients()}: \\
+    "Makaron, sos"
+    \item \texttt{cook()}: \\
+    "Gotuj 10 min"
+    \item \texttt{serve()}: \\
+    "Podaj z parmezanem"
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{PizzaRecipe:}
+\begin{itemize}
+    \item \texttt{gather\_ingredients()}: \\
+    "Ciasto, ser, salami"
+    \item \texttt{cook()}: \\
+    "Piecz 15 min w 220C"
+    \item \texttt{serve()}: \\
+    "Pokrój na kawałki"
+\end{itemize}
+\end{column}
+\end{columns}
+
+\vspace{0.5cm}
+
+Każda podklasa implementuje te same metody, ale \textbf{na swój sposób}.
+\end{frame}
+
+\begin{frame}{Magia Template Method}
+\begin{center}
+\Large
+\textbf{Hollywood Principle:}\\
+\vspace{0.3cm}
+\textit{"Don't call us, we'll call you!"}
+\end{center}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item \textbf{Nie ty} wywołujesz kolejne kroki
+    \item \textbf{Szablon} wywołuje Twoje metody we właściwej kolejności
+    \item Ty tylko mówisz "jak" zrobić dany krok
+    \item Szablon mówi "kiedy" i "w jakiej kolejności"
+\end{itemize}
+
+\vspace{0.5cm}
+
+\begin{center}
+\texttt{pasta.prepare()} wywołuje:\\
+\texttt{pasta.gather\_ingredients()} $\rightarrow$ \texttt{pasta.cook()} $\rightarrow$ \texttt{pasta.serve()}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Porównanie: Przed i Po}
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\textbf{Przed (copy-paste pieklo):}
+\begin{lstlisting}[basicstyle=\ttfamily\tiny]
+class PastaRecipe:
+    def prepare(self):
+        print("=== Makaron ===")
+        print("1. Przygotowanie...")
+        print("  - Makaron")
+        print("2. Gotowanie...")
+        print("  - Gotuj 10 min")
+        print("3. Podawanie...")
+        print("  - Z parmezanem")
+        print("=== Gotowe ===")
+
+class PizzaRecipe:
+    def prepare(self):
+        print("=== Pizza ===")
+        print("1. Przygotowanie...")
+        # ... ZNOWU TO SAMO
+\end{lstlisting}
+
+\textcolor{red}{[X]} Duplikacja kodu\\
+\textcolor{red}{[X]} Trudno utrzymać\\
+\textcolor{red}{[X]} Łatwo zrobić błąd
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{Po (Template Method):}
+\begin{lstlisting}[basicstyle=\ttfamily\tiny]
+class Recipe(ABC):
+    def prepare(self):
+        # Szablon raz zdefiniowany!
+        print(f"=== {self.get_name()} ===")
+        print("1. Przygotowanie...")
+        self.gather_ingredients()
+        print("2. Gotowanie...")
+        self.cook()
+        # itd...
+
+class PastaRecipe(Recipe):
+    def gather_ingredients(self):
+        print("  - Makaron")
+    def cook(self):
+        print("  - Gotuj 10 min")
+    # Tylko szczegoly!
+\end{lstlisting}
+
+\textcolor{green}{[OK]} Brak duplikacji\\
+\textcolor{green}{[OK]} Łatwo dodać przepis\\
+\textcolor{green}{[OK]} Jeden punkt zmiany
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Kiedy używać Template Method?}
+\begin{itemize}
+    \item Masz \textbf{kilka klas z podobnym algorytmem}
+    \item Algorytmy różnią się tylko \textbf{szczegółami implementacji}
+    \item Chcesz \textbf{uniknąć duplikacji} wspólnego kodu
+    \item Chcesz \textbf{kontrolować kolejność} wykonywania kroków
+    \item Podklasy mają \textbf{dostosować} konkretne kroki, nie zmieniając struktury
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Przykładowe zastosowania:}
+\begin{itemize}
+    \item Parsery różnych formatów (JSON, XML, CSV)
+    \item Systemy płatności (karta, PayPal, BLIK)
+    \item Algorytmy sortowania z różną logiką porównywania
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Trade-off:} Większa hierarchia klas, ale zero duplikacji!
+\end{frame}
+
+\begin{frame}{Dzisiaj na zajęciach}
+\begin{enumerate}
+    \item Dostaniecie kod systemu przepisów kulinarnych (z duplikacją): \\
+    \texttt{https://github.com/refactor-or-die/lab03-copy-paste-kitchen}
+    \item W parach zrefaktoryzujecie go używając Template Method
+    \item Wyciągniecie wspólny szablon do klasy bazowej
+    \item Zaprezentujecie swoje rozwiązanie
+\end{enumerate}
+
+\vspace{1cm}
+
+\begin{center}
+\Large
+\textbf{Pytania?} \\
+\vspace{0.5cm}
+\normalsize
+Jeśli nie -- to \texttt{git clone} i do kuchni!
+\end{center}
+\end{frame}
+
+\end{document}
