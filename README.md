@@ -70,21 +70,27 @@ Różnią się tylko **szczegóły** w każdym kroku!
 
 ## FAQ
 **Q: Czy mogę zmienić strukturę kroków?**
+
 A: Nie! Testy sprawdzają konkretne stringi. Szablon musi zostać taki sam.
 
 **Q: Co z tą sałatką która nie ma gotowania?**
+
 A: To nie problem. `cook_time = 0` i w kroku "Gotuj" ona mieszae. Szablon jest uniwersalny!
 
 **Q: Ile metod abstrakcyjnych powinienem mieć?**
+
 A: Tyle, ile potrzebujesz. Minimalne to: `get_name()`, `gather_ingredients()`, `prepare_ingredients()`, `cook()`, `serve()`. Ale możesz też inaczej!
 
 **Q: A jak ktoś zechce zmienić kolejność kroków?**
+
 A: To już nie Template Method, to Builder albo Strategy. Tu zakładamy że **kolejność jest stała**.
 
 **Q: Poprzedni developer naprawdę został zwolniony?**
+
 A: Nie, przecież to tylko scenariusz. Ale **powinien**
 
 **Q: Czy mogę...?**
+
 A: Nie.
 
 ---
