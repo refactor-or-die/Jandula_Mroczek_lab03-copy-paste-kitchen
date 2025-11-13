@@ -40,12 +40,32 @@ Różnią się tylko **szczegóły** w każdym kroku!
 2. Uruchomcie testy: `pytest` (powinny przejść)
 3. Zrefaktoryzujcie kod używając wzorca Template Method:
    - Stwórzcie klasę bazową `Recipe` (abstrakcyjną)
+   
+   ```python
+   from abc import ABC, abstractmethod
+   
+   class Recipe(ABC):
+       """Abstrakcyjna klasa bazowa dla przepisów"""
+       
+       def prepare(self):
+           # Tu bedzie wasz Template Method!
+           pass
+   ```
+   
    - Przenieście **szkielet algorytmu** do metody `prepare()` w klasie bazowej
    - Zdefiniujcie metody abstrakcyjne dla kroków które się różnią
+
+   ```python
+   @abstractmethod
+   def gather_ingredients(self, steps: List[str]):
+       """Kazda podklasa MUSI to zaimplementowac"""
+       pass
+   ```
+     
    - Podklasy mają implementować tylko te metody
-4. Uruchomcie testy ponownie (MUSZĄ przejść!)
-5. Readme z opisem lub komentarze mile widzane
-6. Commit + push na Wasz branch
+3. Uruchomcie testy ponownie (MUSZĄ przejść!)
+4. Readme z opisem lub komentarze mile widzane
+5. Commit + push na Wasz branch
 
 ## Wskazówki
 - Metoda `prepare()` w klasie bazowej to **Template Method** - nie nadpisujemy jej!
